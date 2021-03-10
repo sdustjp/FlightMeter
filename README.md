@@ -1,2 +1,0 @@
-# FlightMeter
-Minecraft Forge Mod
