@@ -58,6 +58,7 @@ public class FlightMeterRenderer {
 			}
 
 			// TEST
+			renderTargetMarker(ev.getPartialTicks());
 //			drawTestHUD(ev.getPartialTicks());
 
 
@@ -196,59 +197,7 @@ public class FlightMeterRenderer {
 		int width = mc.getMainWindow().getScaledWidth();
 		int height = mc.getMainWindow().getScaledHeight();
 
-		String name = "Pos(0.5 10.5 0.5)";
-
-		Vec3d targetPos = new Vec3d(0.5, 10.5, 0.5);
-
 		drawFlightHUD(0, -height/10, width, height, 0xff00ff00);
-
-		Vector4f v;
-
-		int px, py;
-//
-//		if(vec.getZ() < 0.0f) {
-//
-//			if(tx < -1.0f) tx = -1.0f;
-//			if(tx >  1.0f) tx =  1.0f;
-//			if(ty < -1.0f) ty = -1.0f;
-//			if(ty >  1.0f) ty =  1.0f;
-//
-//			vx = (int)(tx * width/2) + width/2;
-//			vy = (int)(ty * height/2) + height/2;
-//	//		vx = (int)(vec.getX() * width/2);
-//	//		vy = (int)(vec.getY() * height/2);
-//	//		vx = (int)(vec.getX() + width/2);
-//	//		vy = (int)(vec.getY() + height/2);
-//
-//
-//			AbstractGui.fill(vx - 10, vy - 10, vx, vy, 0xffffff00);
-//			AbstractGui.fill(vx, vy, vx + 10, vy + 10, 0xffffff00);
-//
-//		}
-
-
-		World world = mc.player.world;
-		List<PlayerEntity> players = (List<PlayerEntity>) world.getPlayers();
-
-		for(PlayerEntity player : players) {
-			if(player.isAlive()) {
-				if(player.getName().getString().equalsIgnoreCase("tesdust")) {
-					name = player.getName().getString();
-					targetPos = player.getPositionVec();
-				}
-			}
-		}
-
-		v = calcTargetPosOnScreen(targetPos, partialTicks);
-
-		if(v.getZ() < 0.0f) {
-
-			px = (int)(v.getX() * width/2) + width/2;
-			py = (int)(v.getY() * height/2) + height/2;
-
-			drawTargetMark(name, px, py, 0xffffff00);
-
-		}
 
 	}
 
@@ -358,6 +307,44 @@ public class FlightMeterRenderer {
 
 			AbstractGui.fill(vx - 10, vy - 10, vx, vy, 0xffffff00);
 			AbstractGui.fill(vx, vy, vx + 10, vy + 10, 0xffffff00);
+
+		}
+
+	}
+
+	public void renderTargetMarker(float partialTicks) {
+		Minecraft mc = Minecraft.getInstance();
+		int width = mc.getMainWindow().getScaledWidth();
+		int height = mc.getMainWindow().getScaledHeight();
+
+		String name = "Pos(0.5 10.5 0.5)";
+
+		Vec3d targetPos = new Vec3d(0.5, 10.5, 0.5);
+
+		Vector4f v;
+
+		int px, py;
+
+		World world = mc.player.world;
+		List<? extends PlayerEntity> players = (List<? extends PlayerEntity>) world.getPlayers();
+
+		for(PlayerEntity player : players) {
+			if(player.isAlive()) {
+				if(player.getName().getString().equalsIgnoreCase("tesdust")) {
+					name = player.getName().getString();
+					targetPos = player.getPositionVec();
+				}
+			}
+		}
+
+		v = calcTargetPosOnScreen(targetPos, partialTicks);
+
+		if(v.getZ() < 0.0f) {
+
+			px = (int)(v.getX() * width/2) + width/2;
+			py = (int)(v.getY() * height/2) + height/2;
+
+			drawTargetMark(name, px, py, 0xffffff00);
 
 		}
 

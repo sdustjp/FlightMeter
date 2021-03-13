@@ -87,6 +87,20 @@ public class FlightMeter
 //            LOGGER.info("HELLO from Register Block");
 //        }
 //    }
+//
+//	@OnlyIn(Dist.CLIENT)
+//	@SubscribeEvent
+//    public void onCommand(CommandEvent ev) {
+//
+//		ParseResults<CommandSource> pr;
+//		pr = ev.getParseResults();
+//
+//		if(pr.getContext().getCommand().)
+//
+//
+//
+//	}
+//
 
     public static int toggleMode() {
     	Minecraft mc = Minecraft.getInstance();
