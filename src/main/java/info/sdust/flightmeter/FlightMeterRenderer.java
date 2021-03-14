@@ -1,10 +1,5 @@
 package info.sdust.flightmeter;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import org.apache.logging.log4j.Logger;
-
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.player.ClientPlayerEntity;
 import net.minecraft.client.gui.AbstractGui;
@@ -21,6 +16,10 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
+import org.apache.logging.log4j.Logger;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class FlightMeterRenderer {
 
@@ -287,6 +286,8 @@ public class FlightMeterRenderer {
 		float yaw = player.rotationYaw;
 
 		double alt = player.getPosY();
+		//とりあえずここでオートパイロットを呼び出す(仮)
+		AutoPilot.getInstance().run();
 
 		drawHorizonLine(pitch, x + width/3, y + height/4, width/3, height/2, color);
 

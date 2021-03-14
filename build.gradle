@@ -6,6 +6,8 @@ buildscript {
     }
     dependencies {
         classpath group: 'net.minecraftforge.gradle', name: 'ForgeGradle', version: '3.+', changing: true
+
+
     }
 }
 apply plugin: 'net.minecraftforge.gradle'
@@ -16,6 +18,7 @@ apply plugin: 'maven-publish'
 version = '1.0'
 group = 'info.sdust.flightmeter' // http://maven.apache.org/guides/mini/guide-naming-conventions.html
 archivesBaseName = 'FlightMeter'
+tasks.withType(Jar) {compileJava.options.encoding = 'UTF-8'}
 
 sourceCompatibility = targetCompatibility = compileJava.sourceCompatibility = compileJava.targetCompatibility = '1.8' // Need this here so eclipse task generates correctly.
 
@@ -109,6 +112,9 @@ dependencies {
     // http://www.gradle.org/docs/current/userguide/artifact_dependencies_tutorial.html
     // http://www.gradle.org/docs/current/userguide/dependency_management.html
 
+
+    compile 'com.fasterxml.jackson.core:jackson-core:2.11.0'
+    compile 'com.fasterxml.jackson.core:jackson-databind:2.9.9.2'
 }
 
 // Example for how to get properties into the manifest for reading by the runtime..
@@ -122,8 +128,11 @@ jar {
             "Implementation-Version": "${version}",
             "Implementation-Vendor" :"sdust",
             "Implementation-Timestamp": new Date().format("yyyy-MM-dd'T'HH:mm:ssZ")
-        ])
+        ]
+        )
+        attributes 'ContainedDeps': 'jackson-core:2.11.0.jar jackson-databind:2.9.9.2.jar'
     }
+
 }
 
 // Example configuration to allow publishing using the maven-publish task
