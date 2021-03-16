@@ -13,9 +13,11 @@ import net.minecraft.client.renderer.Matrix4f;
 import net.minecraft.client.renderer.Quaternion;
 import net.minecraft.client.renderer.Vector4f;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.EquipmentSlotType;
 import net.minecraft.item.Items;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.world.World;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
@@ -54,6 +56,12 @@ public class FlightMeterRenderer {
 					}
 				}
 			}
+
+			// TEST
+			renderTargetMarker(ev.getPartialTicks());
+//			drawTestHUD(ev.getPartialTicks());
+
+
 
 		}
 
@@ -200,6 +208,9 @@ public class FlightMeterRenderer {
 		int width = mc.getMainWindow().getScaledWidth();
 		int height = mc.getMainWindow().getScaledHeight();
 
+		float tx, ty;
+		int vx, vy;
+
 		Quaternion rotation;
 
 		ActiveRenderInfo renderInfo;
@@ -221,52 +232,169 @@ public class FlightMeterRenderer {
 //		mc.gameRenderer.
 		matrix = mc.gameRenderer.getProjectionMatrix(renderInfo, partialTicks, true);
 
-		strArray = matrix.toString().split("\n");
-
-		strs.add("matrix=");
-		for(String str : strArray) {
-			strs.add(str);
-		}
+//		strArray = matrix.toString().split("\n");
+//		strs.add("matrix=");
+//		for(String str : strArray) {
+//			strs.add(str);
+//		}
 
 		//Quaternion qua = Quaternion.ONE;
 		//qua.
 
 		//matrix.mul(matrix.mul);
 
-		Vec3d vec3 = new Vec3d(0.0, 0.0, 0.0);
+		Vec3d targetPos = new Vec3d(0.0, 5.0, 0.0);
+		Vec3d cameraPos = renderInfo.getProjectedView();
+
+		strs.add("targetPos=" + targetPos.toString());
+		strs.add("cameraPos=" + cameraPos.toString());
 
 //		vec3 = vec3.subtract(player.getPositionVector());
-		vec3 = player.getPositionVector().subtract(vec3);
+//		vec3 = player.getPositionVector().subtract(vec3);
+//		vec3 = renderInfo.getProjectedView().subtract(vec3);
+		targetPos = targetPos.subtract(cameraPos);
+		strs.add("(sub) targetPos=" + targetPos.toString());
 
-//		renderInfo.getProjectedView();
+//		targetPos = targetPos.rotateYaw((float)(player.rotationYaw * Math.PI / 180.0));
+//		targetPos = targetPos.rotatePitch((float)(player.rotationPitch * Math.PI / 180.0));
+//		strs.add("(rot) targetPos=" + targetPos.toString());
+
+		vec = new Vector4f((float)targetPos.x, (float)targetPos.y, (float)targetPos.z, 1.0f);
+
+		strs.add("vec=" + vec.toString());
+
+
 
 		rotation = renderInfo.getRotation().copy();
-
-		strs.add("vec3=" + vec3.toString());
-
-//		vec3 = vec3.rotatePitch((float)(player.rotationPitch * Math.PI / 180.0));
-//		vec3 = vec3.rotateYaw((float)(player.rotationYaw * Math.PI / 180.0));
-
-		strs.add("vec3=" + vec3.toString());
-
-		vec = new Vector4f((float)vec3.x, (float)vec3.y, (float)vec3.z, 1.0f);
-
-		rotation.multiply(-1.0f);
+		strs.add("rotation=" + rotation.toString());
+//		Quaternion invRot = new Quaternion(-rotation.getX(), -rotation.getY(), -rotation.getZ(), rotation.getW());
+//		strs.add("invRot=" + invRot.toString());
+//		rotation.multiply(-1.0f);
+//		strs.add("rotation=" + rotation.toString());
+//		vec.transform(invRot);
+//		strs.add("(trans invRot) vec=" + vec.toString());
+		rotation.conjugate();
 		vec.transform(rotation);
-
-		strs.add("vec=" + vec.toString());
+		strs.add("(trans rot) vec=" + vec.toString());
 
 		vec.transform(matrix);
+		strs.add("(trans mat) vec=" + vec.toString());
 
-		strs.add("vec=" + vec.toString());
+
+		strs.add("rotation.conjugate()=" + rotation.toString());
+
 
 
 		drawStringLines(strs, 5, 5, 0xffffff);
 
+		tx = vec.getX() / vec.getZ();
+		ty = vec.getY() / vec.getZ();
 
-		AbstractGui.fill((int)(vec.getX()*width/2 + width/2 - 10), (int)(vec.getY()*height/2 + height/2 - 10), (int)(vec.getX()*width/2 + width/2), (int)(vec.getY()*height/2 + height/2), 0xffffff00);
-		AbstractGui.fill((int)(vec.getX()*width/2 + width/2), (int)(vec.getY()*height/2 + height/2), (int)(vec.getX()*width/2 + width/2 + 10), (int)(vec.getY()*height/2 + height/2 + 10), 0xffffff00);
+		if(vec.getZ() < 0.0f) {
 
+			if(tx < -1.0f) tx = -1.0f;
+			if(tx >  1.0f) tx =  1.0f;
+			if(ty < -1.0f) ty = -1.0f;
+			if(ty >  1.0f) ty =  1.0f;
+
+			vx = (int)(tx * width/2) + width/2;
+			vy = (int)(ty * height/2) + height/2;
+	//		vx = (int)(vec.getX() * width/2);
+	//		vy = (int)(vec.getY() * height/2);
+	//		vx = (int)(vec.getX() + width/2);
+	//		vy = (int)(vec.getY() + height/2);
+
+
+			AbstractGui.fill(vx - 10, vy - 10, vx, vy, 0xffffff00);
+			AbstractGui.fill(vx, vy, vx + 10, vy + 10, 0xffffff00);
+
+		}
+
+	}
+
+	public void renderTargetMarker(float partialTicks) {
+		Minecraft mc = Minecraft.getInstance();
+		int width = mc.getMainWindow().getScaledWidth();
+		int height = mc.getMainWindow().getScaledHeight();
+
+		String name = "Pos(0.5 10.5 0.5)";
+
+		Vec3d targetPos = new Vec3d(0.5, 10.5, 0.5);
+
+		Vector4f v;
+
+		int px, py;
+
+		World world = mc.player.world;
+		List<? extends PlayerEntity> players = (List<? extends PlayerEntity>) world.getPlayers();
+
+		for(PlayerEntity player : players) {
+			if(player.isAlive()) {
+				if(player.getName().getString().equalsIgnoreCase("tesdust")) {
+					name = player.getName().getString();
+					targetPos = player.getPositionVec();
+				}
+			}
+		}
+
+		v = calcTargetPosOnScreen(targetPos, partialTicks);
+
+		if(v.getZ() < 0.0f) {
+
+			px = (int)(v.getX() * width/2) + width/2;
+			py = (int)(v.getY() * height/2) + height/2;
+
+			drawTargetMark(name, px, py, 0xffffff00);
+
+		}
+
+	}
+
+	public Vector4f calcTargetPosOnScreen(Vec3d targetPos, float partialTicks) {
+		Minecraft mc = Minecraft.getInstance();
+
+		ActiveRenderInfo renderInfo = mc.gameRenderer.getActiveRenderInfo();
+
+		Vec3d cameraPos = renderInfo.getProjectedView();
+		Matrix4f matrix = mc.gameRenderer.getProjectionMatrix(renderInfo, partialTicks, true);
+		Quaternion rotation = renderInfo.getRotation().copy();
+
+		Vector4f targetVec;
+
+		targetPos = targetPos.subtract(cameraPos);
+		targetVec = new Vector4f((float)targetPos.x, (float)targetPos.y, (float)targetPos.z, 1.0f);
+
+		// DEBUG Info
+
+//		List<String> strs = new ArrayList<String>();
+//
+//		strs.add("targetPos=" + targetPos.toString());
+//		strs.add("cameraPos=" + cameraPos.toString());
+//
+//		strs.add("(sub) targetPos=" + targetPos.toString());
+//
+//		strs.add("vec=" + targetVec.toString());
+//
+//		strs.add("rotation=" + rotation.toString());
+
+		rotation.conjugate();
+		targetVec.transform(rotation);
+//		strs.add("(trans rot) vec=" + targetVec.toString());
+
+		targetVec.transform(matrix);
+//		strs.add("(trans mat) vec=" + targetVec.toString());
+
+//		drawStringLines(strs, 5, 5, 0xffffff);
+
+		return new Vector4f(targetVec.getX() / targetVec.getZ(), targetVec.getY() / targetVec.getZ(), targetVec.getZ(), targetVec.getW());
+	}
+
+	public void drawTargetMark(String name, int x, int y, int color) {
+
+		AbstractGui.fill(x - 10, y - 10, x, y, color);
+		AbstractGui.fill(x, y, x + 10, y + 10, color);
+
+		drawStringCenter(name, x, y, color);
 
 	}
 
@@ -844,6 +972,16 @@ public class FlightMeterRenderer {
 			mc.fontRenderer.drawString(strLn, x - (strWidth / 2), y, color);
 			y += strHeight;
 		}
+
+	}
+
+	public void drawStringCenter(String str, int x, int y, int color) {
+
+		Minecraft mc = Minecraft.getInstance();
+		int strWidth;
+
+		strWidth = mc.fontRenderer.getStringWidth(str);
+		mc.fontRenderer.drawString(str, x - (strWidth / 2), y, color);
 
 	}
 

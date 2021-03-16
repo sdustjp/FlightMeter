@@ -6,13 +6,9 @@ import org.apache.logging.log4j.Logger;
 import net.minecraft.block.Blocks;
 import net.minecraft.client.Minecraft;
 import net.minecraft.util.text.StringTextComponent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
-import net.minecraftforge.fml.event.lifecycle.InterModEnqueueEvent;
-import net.minecraftforge.fml.event.lifecycle.InterModProcessEvent;
-import net.minecraftforge.fml.event.server.FMLServerStartingEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 
 // The value here should match an entry in the META-INF/mods.toml file
@@ -22,7 +18,8 @@ public class FlightMeter
     // Directly reference a log4j logger.
     public static final Logger LOGGER = LogManager.getLogger();
 
-    private static int mode = 0;
+//    private static int mode = 0;
+    private static int mode = 1;	// TODO TEST
 
     public FlightMeter() {
 
@@ -30,10 +27,10 @@ public class FlightMeter
 
         // Register the setup method for modloading
         FMLJavaModLoadingContext.get().getModEventBus().addListener(this::setup);
-        // Register the enqueueIMC method for modloading
-        FMLJavaModLoadingContext.get().getModEventBus().addListener(this::enqueueIMC);
-        // Register the processIMC method for modloading
-        FMLJavaModLoadingContext.get().getModEventBus().addListener(this::processIMC);
+//        // Register the enqueueIMC method for modloading
+//        FMLJavaModLoadingContext.get().getModEventBus().addListener(this::enqueueIMC);
+//        // Register the processIMC method for modloading
+//        FMLJavaModLoadingContext.get().getModEventBus().addListener(this::processIMC);
         // Register the doClientStuff method for modloading
         FMLJavaModLoadingContext.get().getModEventBus().addListener(this::doClientStuff);
 
@@ -60,25 +57,25 @@ public class FlightMeter
 
     }
 
-    private void enqueueIMC(final InterModEnqueueEvent event)
-    {
-        // some example code to dispatch IMC to another mod
-//        InterModComms.sendTo("examplemod", "helloworld", () -> { LOGGER.info("Hello world from the MDK"); return "Hello world";});
-    }
-
-    private void processIMC(final InterModProcessEvent event)
-    {
-        // some example code to receive and process InterModComms from other mods
-//        LOGGER.info("Got IMC {}", event.getIMCStream().
-//                map(m->m.getMessageSupplier().get()).
-//                collect(Collectors.toList()));
-    }
-    // You can use SubscribeEvent and let the Event Bus discover methods to call
-    @SubscribeEvent
-    public void onServerStarting(FMLServerStartingEvent event) {
-        // do something when the server starts
-//        LOGGER.info("HELLO from server starting");
-    }
+//    private void enqueueIMC(final InterModEnqueueEvent event)
+//    {
+//        // some example code to dispatch IMC to another mod
+////        InterModComms.sendTo("examplemod", "helloworld", () -> { LOGGER.info("Hello world from the MDK"); return "Hello world";});
+//    }
+//
+//    private void processIMC(final InterModProcessEvent event)
+//    {
+//        // some example code to receive and process InterModComms from other mods
+////        LOGGER.info("Got IMC {}", event.getIMCStream().
+////                map(m->m.getMessageSupplier().get()).
+////                collect(Collectors.toList()));
+//    }
+//    // You can use SubscribeEvent and let the Event Bus discover methods to call
+//    @SubscribeEvent
+//    public void onServerStarting(FMLServerStartingEvent event) {
+//        // do something when the server starts
+////        LOGGER.info("HELLO from server starting");
+//    }
 //
 //    // You can use EventBusSubscriber to automatically subscribe events on the contained class (this is subscribing to the MOD
 //    // Event bus for receiving Registry Events)
@@ -90,6 +87,20 @@ public class FlightMeter
 //            LOGGER.info("HELLO from Register Block");
 //        }
 //    }
+//
+//	@OnlyIn(Dist.CLIENT)
+//	@SubscribeEvent
+//    public void onCommand(CommandEvent ev) {
+//
+//		ParseResults<CommandSource> pr;
+//		pr = ev.getParseResults();
+//
+//		if(pr.getContext().getCommand().)
+//
+//
+//
+//	}
+//
 
     public static int toggleMode() {
     	Minecraft mc = Minecraft.getInstance();
